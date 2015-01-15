@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"code.google.com/p/go.tools/imports"
+	"golang.org/x/tools/imports"
 )
 
 // FindInterface returns the import path and identifier of an interface.
