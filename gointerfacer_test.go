@@ -19,17 +19,18 @@ func TestFindInterface(t *testing.T) {
 	cases := []struct {
 		iface   string
 		path    string
+		pkg     string
 		id      string
 		wantErr bool
 	}{
-		{iface: "net.Conn", path: "net", id: "Conn"},
-		{iface: "http.ResponseWriter", path: "net/http", id: "ResponseWriter"},
+		{iface: "net.Conn", path: "net", pkg: "net", id: "Conn"},
+		{iface: "http.ResponseWriter", path: "net/http", pkg: "http", id: "ResponseWriter"},
 		{iface: "net.Tennis", wantErr: true},
 		{iface: "a + b", wantErr: true},
 	}
 
 	for _, tt := range cases {
-		path, id, err := FindInterface(tt.iface)
+		path, pkg, id, err := FindInterface(tt.iface)
 		gotErr := err != nil
 		if tt.wantErr != gotErr {
 			t.Errorf("FindInterface(%q).err=%v want %s", tt.iface, err, errBool(tt.wantErr))
@@ -37,6 +38,9 @@ func TestFindInterface(t *testing.T) {
 		}
 		if tt.path != path {
 			t.Errorf("FindInterface(%q).path=%q want %q", tt.iface, path, tt.path)
+		}
+		if tt.pkg != pkg {
+			t.Errorf("FindInterface(%q).pkg=%q want %q", tt.iface, pkg, tt.pkg)
 		}
 		if tt.id != id {
 			t.Errorf("FindInterface(%q).id=%q want %q", tt.iface, id, tt.id)
@@ -114,7 +118,7 @@ func TestFuncs(t *testing.T) {
 				},
 				{
 					Name:   "WriteHeader",
-					Params: []Param{{Type: "int"}},
+					Params: []Param{{Name: "statusCode", Type: "int"}},
 				},
 			},
 		},
@@ -157,7 +161,7 @@ func TestFuncs(t *testing.T) {
 						{Name: "dst", Type: "[]byte"},
 						{Name: "nonce", Type: "[]byte"},
 						{Name: "plaintext", Type: "[]byte"},
-						{Name: "data", Type: "[]byte"},
+						{Name: "additionalData", Type: "[]byte"},
 					},
 					Res: []Param{{Type: "[]byte"}},
 				},
@@ -167,7 +171,7 @@ func TestFuncs(t *testing.T) {
 						{Name: "dst", Type: "[]byte"},
 						{Name: "nonce", Type: "[]byte"},
 						{Name: "ciphertext", Type: "[]byte"},
-						{Name: "data", Type: "[]byte"},
+						{Name: "additionalData", Type: "[]byte"},
 					},
 					Res: []Param{{Type: "[]byte"}, {Type: "error"}},
 				},
